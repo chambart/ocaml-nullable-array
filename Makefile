@@ -1,4 +1,4 @@
-COMPILE_ARG=-g -bin-annot -annot -keep-locs
+COMPILE_ARG=-g -bin-annot -annot -keep-locs -w +a-37 -warn-error +a
 COMPILE_OPT_ARG=$(COMPILE_ARG)
 
 all: natdynlink
@@ -25,6 +25,29 @@ lib/nullable_array.cmxs: lib/nullable_array.cmx
 lib/nullable_array.cma: lib/nullable_array.cmo
 	ocamlc $(COMPILE_ARG) -I lib -a $? -o $@
 
+clean::
+	rm -f lib/*.a lib/*.o lib/*.cma lib/*.cmo lib/*.cmx lib/*.cmi \
+	      lib/*.cmxa lib/*.cmxs lib/*.cmt lib/*.cmti lib/*.annot
+
+TEST_COMPILE_ARG=-I lib -I test -w +a
+
+test: test_native
+
+test_byte: test/basic.byte
+test_native: test_byte test/basic.opt
+
+test/basic.byte: test/basic.mli test/basic.ml byte
+	ocamlc $(TEST_COMPILE_ARG) lib/nullable_array.cma test/basic.mli test/basic.ml -o $@
+	$@
+
+test/basic.opt: test/basic.ml native
+	ocamlopt $(TEST_COMPILE_ARG) lib/nullable_array.cmxa test/basic.mli test/basic.ml -o $@
+	$@
+
+clean::
+	rm -f test/*.a test/*.o test/*.cma test/*.cmo test/*.cmx test/*.cmi \
+	      test/*.cmxa test/*.cmxs test/*.cmt test/*.cmti test/*.annot \
+	      test/*.byte test/*.opt
 
 install:
 	ocamlfind install nullable_array META \
@@ -33,9 +56,5 @@ install:
 
 uninstall:
 	ocamlfind remove nullable_array
-
-clean:
-	rm -f lib/*.a lib/*.o lib/*.cma lib/*.cmo lib/*.cmx lib/*.cmi \
-	      lib/*.cmxa lib/*.cmxs lib/*.cmt lib/*.cmti lib/*.annot
 
 .PHONY: all install uninstall clean
