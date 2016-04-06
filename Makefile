@@ -33,15 +33,23 @@ TEST_COMPILE_ARG=-I lib -I test -w +a
 
 test: test_native
 
-test_byte: test/basic.byte
-test_native: test_byte test/basic.opt
+test_byte: test/basic.byte test/basic_float.byte
+test_native: test_byte test/basic.opt test/basic_float.opt
 
 test/basic.byte: test/basic.mli test/basic.ml byte
 	ocamlc $(TEST_COMPILE_ARG) lib/nullable_array.cma test/basic.mli test/basic.ml -o $@
 	$@
 
-test/basic.opt: test/basic.ml native
+test/basic.opt: test/basic.mli test/basic.ml native
 	ocamlopt $(TEST_COMPILE_ARG) lib/nullable_array.cmxa test/basic.mli test/basic.ml -o $@
+	$@
+
+test/basic_float.byte: test/basic_float.mli test/basic_float.ml byte
+	ocamlc $(TEST_COMPILE_ARG) lib/nullable_array.cma test/basic_float.mli test/basic_float.ml -o $@
+	$@
+
+test/basic_float.opt: test/basic_float.mli test/basic_float.ml native
+	ocamlopt $(TEST_COMPILE_ARG) lib/nullable_array.cmxa test/basic_float.mli test/basic_float.ml -o $@
 	$@
 
 clean::
