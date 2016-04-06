@@ -81,9 +81,34 @@ let t4 () =
   assert(A.get a 2 = None);
   assert(a = empty)
 
+let t5 () =
+  let a = A.make 10 in
+  A.set_some a 3 3;
+  A.set_some a 5 5;
+  A.set_some a 9 9;
+  let some = ref 0 in
+  let count = ref 0 in
+  let last = ref (-1) in
+  A.iteri
+    ~some:(fun i n ->
+        incr some;
+        incr count;
+        assert(!last = i - 1);
+        last := i;
+        assert(i = n))
+    ~none:(fun i ->
+        incr count;
+        assert(!last = i - 1);
+        last := i)
+    a;
+  assert(!last = 9);
+  assert(!some = 3);
+  assert(!count = 10)
+
 let () =
   t1 ();
   t2 ();
   t3 ();
   t4 ();
+  t5 ();
   ()
