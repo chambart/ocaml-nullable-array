@@ -64,4 +64,17 @@ val iteri : some:(int -> 'a -> unit) -> none:(int -> unit) -> 'a t -> unit
     and the value of all the defined elements of [a] and function [none]
     to all the indices of the undefined ones.
     On an array [ [|Some v0; None; Some v2|] ] it is equivalent to
-    [some 0 v0; none 1; some 2 v2]. *)
+    [some 0 v0; none 1; some 2 v2].
+ *)
+
+val blit : 'a t -> int -> 'a t -> int -> int -> unit
+(** [blit from from_start to to_start len] copies [len] elements
+    from array [from], starting at element number [from_start],
+    to array [to], starting at element number [to_start]. It works
+    correctly even if [v1] and [v2] are the same array, and
+    the source and destination chunks overlap.
+
+    Raise [Invalid_argument "Nullable_array.blit"] if [from_start]
+    and [len] do not designate a valid subarray of [from], or if
+    [to_start] and [len] do not designate a valid subarray of [to].
+ *)

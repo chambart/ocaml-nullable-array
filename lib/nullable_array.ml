@@ -104,7 +104,7 @@ let make (n:int) : 'a t =
      already does it *)
   Array.make (n+1) (null:elt)
 
-let empty_array : 'a t = Array.make 1 null
+let empty_array : 'a t = [| null |]
 
 let get_null (a:'a t) : elt =
   (* An array of type ['a t] cannot be empty *)
@@ -152,3 +152,31 @@ let iteri ~(some:int -> 'a -> unit) ~(none:int -> unit) (a:'a t) : unit =
       none (i-1)
   done
 [@@ocaml.inline]
+
+let unsafe_manual_blit (from:'a t) (from_start:int) (to_:'a t) (to_start:int) (len:int) =
+  let null_from = get_null from in
+  let null_to = get_null to_ in
+  for i = 0 to len - 1 do
+    let v = from.(i + from_start + 1) in
+    if v == null_from then
+      to_.(i + to_start + 1) <- null_to
+    else
+      to_.(i + to_start + 1) <- v
+  done
+
+let blit (from:'a t) (from_start:int) (to_:'a t) (to_start:int) (len:int) =
+  if len < 0 || from_start < 0 || from_start > length from - len
+     || to_start < 0 || to_start > length to_ - len
+  then invalid_arg "Nullable_array.blit"
+  else begin
+    (* If both null are the same, we can optimize by using the version
+       from the runtime. Since the only way for those not to be equal is
+       related to some marshaling/unmarshaling, this hold in the general
+       case, hence the [@inlined never] attibute on the other branch. *)
+    let null_from = get_null from in
+    let null_to = get_null to_ in
+    if null_from == null_to then
+      Array.blit from (from_start + 1) to_ (to_start + 1) len
+    else
+      (unsafe_manual_blit [@inlined never]) from from_start to_ to_start len
+  end
