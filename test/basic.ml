@@ -116,6 +116,54 @@ let t6 () =
   assert(A.get b 2 = None);
   assert(a = b)
 
+let t7 () =
+  let len = 5 in
+  let a = A.make len in
+  let b = A.make (2 * len) in
+  check_invalid_arg (A.blit a 0 b 0) (len + 1);
+  check_invalid_arg (A.blit a 1 b 0) (len);
+  check_invalid_arg (A.blit a len b 0) 1;
+  check_invalid_arg (A.blit a 0 b (len+1)) len;
+  check_invalid_arg (A.blit a 2 b 2) (-1);
+  check_invalid_arg (A.blit a (-1) b 2) 0;
+  check_invalid_arg (A.blit a 1 b (-1)) 0;
+  let init arr =
+    for i = 0 to A.length arr - 1 do
+      A.set_some arr i i;
+    done
+  in
+  let eq_array_some arr tarr =
+    assert(A.length arr = Array.length tarr);
+    for i = 0 to A.length arr - 1 do
+      assert(Some tarr.(i) = A.get arr i)
+    done
+  in
+  let eq_array arr tarr =
+    assert(A.length arr = Array.length tarr);
+    for i = 0 to A.length arr - 1 do
+      assert(tarr.(i) = A.get arr i)
+    done
+  in
+  init a;
+  eq_array_some a [|0;1;2;3;4|];
+  eq_array b [| None; None; None; None; None; None; None; None; None; None |];
+  A.blit a 0 b len len;
+  eq_array b [| None;   None;   None;   None;   None;
+                Some 0; Some 1; Some 2; Some 3; Some 4 |];
+  A.blit a 2 b 3 2;
+  eq_array b [| None;   None;   None;   Some 2; Some 3;
+                Some 0; Some 1; Some 2; Some 3; Some 4; |];
+  A.clear a 3;
+  eq_array a [| Some 0; Some 1; Some 2; None  ; Some 4 |];
+  A.blit a 2 b 3 2;
+  eq_array b [| None;   None;   None;   Some 2; None;
+                Some 0; Some 1; Some 2; Some 3; Some 4; |];
+  A.blit a 0 a 1 4;
+  eq_array a [| Some 0; Some 0; Some 1; Some 2; None |];
+  A.blit a 2 a 1 2;
+  eq_array a [| Some 0; Some 1; Some 2; Some 2; None |];
+  ()
+
 let () =
   t1 ();
   t2 ();
@@ -123,4 +171,5 @@ let () =
   t4 ();
   t5 ();
   t6 ();
+  t7 ();
   ()
