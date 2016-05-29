@@ -29,7 +29,7 @@ clean::
 	rm -f lib/*.a lib/*.o lib/*.cma lib/*.cmo lib/*.cmx lib/*.cmi \
 	      lib/*.cmxa lib/*.cmxs lib/*.cmt lib/*.cmti lib/*.annot
 
-TEST_COMPILE_ARG=-I lib -I test -w +a
+TEST_COMPILE_ARG=-g -I lib -I test -w +a
 
 test: test_native
 
