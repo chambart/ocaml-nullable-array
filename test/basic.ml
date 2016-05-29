@@ -12,6 +12,9 @@ let ign_make (n:int) =
 let ign_get (a:'a A.t) n =
   ignore(A.get a n:'a option)
 
+let marshal_identity (v:'a A.t) : 'a A.t =
+  Marshal.from_string (Marshal.to_string v []) 0
+
 let t1 () =
   let a = A.make 8 in
   let b = A.make 8 in
@@ -105,10 +108,19 @@ let t5 () =
   assert(!some = 3);
   assert(!count = 10)
 
+let t6 () =
+  let a = A.make 3 in
+  let b = marshal_identity a in
+  assert(A.get b 0 = None);
+  assert(A.get b 1 = None);
+  assert(A.get b 2 = None);
+  assert(a = b)
+
 let () =
   t1 ();
   t2 ();
   t3 ();
   t4 ();
   t5 ();
+  t6 ();
   ()
