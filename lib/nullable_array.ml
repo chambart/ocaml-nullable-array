@@ -4,6 +4,7 @@
    * Dynamic float arrays
    * Marshalling
    * no-naked-pointer variant
+   * structural equality/comparison functions
 
    If future version of OCaml runtime and compiler break some
    expected invariants, this library will be updated accordingly.
@@ -58,15 +59,19 @@ type elt =
      When this property is required, the code should be completely
      explicitely annotated. *)
 
-exception Null
-let null : elt = Obj.magic Null
+type null = { mutable null : int }
+let null : elt = Obj.magic { null = 0 }
 (* The null value is encoded as a value for which the semantics of
-   physical equality is completely defined. This could be a mutable
-   value, but exception also have the nice benefic of being able to
-   be statically allocated as they are not mutable.
+   physical equality is completely defined.
 
-   There is only a single instance of the null value explicitely
-   created, but other instances can be created through unmarshal.
+   We could either choose a mutable value or an exception. Exceptions
+   have the nice benefic of being able to be statically allocated as
+   they are not mutable, but this is problematic for structural
+   equality: exceptions are structuraly equal if they are physicaly
+   equal, which we cannot ensure when a value is built by
+   unmarshalling. There is only a single instance of the null value
+   explicitely created, but other instances can be created through
+   unmarshal.
 
    Note that the 0 value could have been use with the classic
    runtime, but would break the no-naked-pointer invariant of never
@@ -82,12 +87,12 @@ let null : elt = Obj.magic Null
      let nullf () : elt = int_as_pointer 0 [@@ocaml.inline]
    ]}
 
-   Note that nullf might be faster in general as if the compiler
-   is not able to constant fold the primitive (which will probably
-   never happen as this is not a valid OCaml value and has no
-   valid representation in either closure or flambda approximations)
-   it will still be able to inline the function which will easily
-   produce efficient code. *)
+   Note that nullf might be faster in general since the compiler might
+   not able to constant fold the primitive (which will probably never
+   happen as this is not a valid OCaml value and has no valid
+   representation in either closure or flambda approximations) it will
+   still be able to inline the function which will easily produce the
+   expected efficient code. *)
 
 type 'a t = elt array
 
