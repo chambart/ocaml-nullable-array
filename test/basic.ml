@@ -114,12 +114,14 @@ let t6 () =
   assert(A.get b 0 = None);
   assert(A.get b 1 = None);
   assert(A.get b 2 = None);
+  check_invalid_arg (ign_get b) (-1);
+  check_invalid_arg (ign_get b) 3;
   assert(a = b)
 
-let t7 () =
+let test_blit id =
   let len = 5 in
   let a = A.make len in
-  let b = A.make (2 * len) in
+  let b = id (A.make (2 * len)) in
   check_invalid_arg (A.blit a 0 b 0) (len + 1);
   check_invalid_arg (A.blit a 1 b 0) (len);
   check_invalid_arg (A.blit a len b 0) 1;
@@ -163,6 +165,10 @@ let t7 () =
   A.blit a 2 a 1 2;
   eq_array a [| Some 0; Some 1; Some 2; Some 2; None |];
   ()
+
+let t7 () =
+  test_blit (fun x -> x);
+  test_blit marshal_identity
 
 let () =
   t1 ();
