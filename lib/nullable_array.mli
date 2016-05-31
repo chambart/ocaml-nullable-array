@@ -78,3 +78,5 @@ val blit : 'a t -> int -> 'a t -> int -> int -> unit
     and [len] do not designate a valid subarray of [from], or if
     [to_start] and [len] do not designate a valid subarray of [to].
  *)
+
+val equal : 'a t -> 'a t -> equal:('a -> 'a -> bool) -> bool

@@ -170,6 +170,45 @@ let t7 () =
   test_blit (fun x -> x);
   test_blit marshal_identity
 
+let t8 () =
+  let zero1 = A.make 0 in
+  let zero2 = A.make 0 in
+  let empty_not_zero = A.make 1 in
+  assert(A.equal zero1 zero2 ~equal:(fun _ _ -> false));
+  assert(not (A.equal zero1 empty_not_zero ~equal:(fun _ _ -> assert false)));
+
+  let a = A.make 3 in
+  let a' = A.make 3 in
+  let a'' = marshal_identity a' in
+  let b = A.make 2 in
+  assert(not (A.equal a b ~equal:(fun _ _ -> true)));
+  assert(A.equal a a' ~equal:(fun _ _ -> assert false));
+  assert(A.equal a a'' ~equal:(fun _ _ -> assert false));
+
+  Random.init 0;
+  let count = 10000 in
+  let size = 3 in
+  let len = 3 in
+  let a = A.make len in
+  let b = A.make len in
+  let v () =
+    let r = Random.int size in
+    if r = 0 then None
+    else Some (Int64.of_int r)
+  in
+  let equal = ref 0 in
+  for _ = 0 to count do
+    A.set a (Random.int len) (v ());
+    A.set b (Random.int len) (v ());
+    let eq = a = b in
+    let eq' = A.equal a b ~equal:Int64.equal in
+    assert(eq = eq');
+    if eq then incr equal;
+  done;
+  assert(!equal > 0); (* Verify that we tested the equal case at least once *)
+  Printf.printf "eq: %i\n%!" !equal;
+  ()
+
 let () =
   t1 ();
   t2 ();
@@ -178,4 +217,5 @@ let () =
   t5 ();
   t6 ();
   t7 ();
+  t8 ();
   ()

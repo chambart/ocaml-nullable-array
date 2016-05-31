@@ -185,3 +185,27 @@ let blit (from:'a t) (from_start:int) (to_:'a t) (to_start:int) (len:int) =
     else
       (unsafe_manual_blit [@inlined never]) from from_start to_ to_start len
   end
+
+let equal (a1:'a t) (a2:'a t) ~(equal:'a -> 'a -> bool) =
+  length a1 = length a2 &&
+  let null1 = get_null a1 in
+  let null2 = get_null a2 in
+  let rec loop i =
+    (* i is a nullable_array index, i.e. it is in the
+       interval [1, Array.length a1 - 1] *)
+    if i < 1 then true
+    else
+      let v1 = Array.unsafe_get (a1:'a t) i in
+      let v2 = Array.unsafe_get (a2:'a t) i in
+      match v1 == null1, v2 == null2 with
+      | true, true ->
+        loop (i-1)
+      | false, false ->
+        let v1' : 'a = Obj.magic (v1:elt) in
+        let v2' : 'a = Obj.magic (v2:elt) in
+        equal v1' v2' && loop (i-1)
+      | false, true | true, false ->
+        false
+  in
+  loop (length a1)
+
