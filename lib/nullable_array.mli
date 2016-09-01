@@ -95,6 +95,7 @@ val iteri : some:(int -> 'a -> unit) -> none:(int -> unit) -> 'a t -> unit
 (** [iteri ~some ~none a] applies function [some] in turn to the index
     and the value of all the defined elements of [a] and function [none]
     to all the indices of the undefined ones.
+
     On an array [ [|Some v0; None; Some v2|] ] it is equivalent to
     [some 0 v0; none 1; some 2 v2].
  *)
@@ -122,3 +123,10 @@ val equal : 'a t -> 'a t -> equal:('a -> 'a -> bool) -> bool
 
     [equal empty_array empty_array ~equal] is [true]
  *)
+
+(**/**)
+(** {6 Undocumented functions} *)
+
+val unsafe_get_some : 'a t -> int -> 'a
+val unsafe_set_some : 'a t -> int -> 'a -> unit
+val unsafe_clear : 'a t -> int -> unit

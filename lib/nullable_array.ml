@@ -238,3 +238,15 @@ let equal (a1:'a t) (a2:'a t) ~(equal:'a -> 'a -> bool) =
   in
   loop (length a1)
 
+(* Unsafe functions *)
+
+let unsafe_get_some (a:'a t) (n:int) : 'a =
+  let elt = Array.unsafe_get (a:'a t) (n+1) in
+  (Obj.magic elt:'a)
+
+let unsafe_set_some (a:'a t) (n:int) (v:'a) : unit =
+  Array.unsafe_set (a:'a t) (n+1) (Obj.magic v : elt)
+
+let unsafe_clear (a:'a t) (n:int) : unit =
+  let null = get_null a in
+  Array.unsafe_set (a:'a t) (n+1) null
