@@ -31,7 +31,10 @@
     memory representation.
 
     Accesses are slightly more expensive than those of (non option)
-    array. Values of type float are systematically boxed. *)
+    array. Values of type float are systematically boxed.
+
+    @author Pierre Chambart
+*)
 
 type 'a t
 (** Arrays of nullable values *)
@@ -109,3 +112,13 @@ val blit : 'a t -> int -> 'a t -> int -> int -> unit
  *)
 
 val equal : 'a t -> 'a t -> equal:('a -> 'a -> bool) -> bool
+(** [equal a1 a2 ~equal] is true if [a1] and [a2] have the same length
+    and for all elements of [a1] and [a2]
+
+    - they are either both [None] or
+    - they are [Some v1] and [Some v2] and [equal v1 v2] returns [true]
+
+    Otherwise the result is [false].
+
+    [equal empty_array empty_array ~equal] is [true]
+ *)

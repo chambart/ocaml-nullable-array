@@ -12,3 +12,7 @@ lib: [
      "lib/nullable_array.cmti"
      "lib/nullable_array.annot"
 ]
+
+man: [
+     "man/Nullable_array.3o"
+]

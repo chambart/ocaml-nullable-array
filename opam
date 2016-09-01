@@ -19,6 +19,8 @@ build-test: [
   [make "test_native"] { ocaml-native }
 ]
 
+install: [] (* no install rules: done through a .install file *)
+
 available: [
   ocaml-version >= "4.02"   (* use -keep-locs and attributes *)
   & ocaml-version <= "4.04" (* need to be tested before announcing that a version is correct *)

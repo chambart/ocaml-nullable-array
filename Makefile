@@ -52,10 +52,25 @@ test/basic_float.opt: test/basic_float.mli test/basic_float.ml native
 	ocamlopt $(TEST_COMPILE_ARG) lib/nullable_array.cmxa test/basic_float.mli test/basic_float.ml -o $@
 	$@
 
+html:
+	mkdir -p html
+
+html_doc: lib/nullable_array.mli | html
+	ocamldoc -html -d html/ $?
+
+man:
+	mkdir -p man
+
+man_doc: lib/nullable_array.mli | man
+	ocamldoc -man -man-mini -d man/ $?
+
+doc: man_doc html_doc
+
 clean::
 	rm -f test/*.a test/*.o test/*.cma test/*.cmo test/*.cmx test/*.cmi \
 	      test/*.cmxa test/*.cmxs test/*.cmt test/*.cmti test/*.annot \
-	      test/*.byte test/*.opt
+	      html/* man/* test/*.byte test/*.opt
+	rmdir -p html man
 
 install:
 	ocamlfind install nullable_array META \
@@ -65,4 +80,4 @@ install:
 uninstall:
 	ocamlfind remove nullable_array
 
-.PHONY: all install uninstall clean
+.PHONY: all html_doc man_doc doc install uninstall clean
