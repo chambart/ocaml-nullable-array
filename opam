@@ -19,6 +19,10 @@ build-test: [
   [make "test_native"] { ocaml-native }
 ]
 
+build-doc: [
+  [make "doc"]
+]
+
 install: [] (* no install rules: done through a .install file *)
 
 available: [
