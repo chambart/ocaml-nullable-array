@@ -1,12 +1,12 @@
 opam-version: "1.3"
-name: "nullable-array"
+name: "ocplib-nullable-array"
 version: "0.1"
 maintainer: "Pierre Chambart <pierre.chambart@ocamlpro.com>"
 authors: "Pierre Chambart <pierre.chambart@ocamlpro.com>"
-homepage: "https://github.com/chambart/nullable-array"
-bug-reports: "https://github.com/chambart/nullable-array/issues"
+homepage: "https://github.com/OCamlPro/ocplib-nullable-array"
+bug-reports: "https://github.com/OCamlPro/ocplib-nullable-array/issues"
 license: "MIT"
-dev-repo: "https://github.com/chambart/nullable-array.git"
+dev-repo: "https://github.com/OCamlPro/ocplib-nullable-array.git"
 
 build: [
   [make "byte"]
