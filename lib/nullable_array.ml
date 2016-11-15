@@ -28,7 +28,7 @@
 (************************************************************************)
 
 (*
-   Designed and tested for OCaml <= 4.03 bytecode and native,
+   Designed and tested for OCaml <= 4.04 bytecode and native,
    Taking into consideration:
    * Dynamic float arrays
    * Marshalling
