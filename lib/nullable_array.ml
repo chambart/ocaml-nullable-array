@@ -158,23 +158,31 @@ let get (a:'a t) (n:int) : 'a option =
 
 let length (a:'a t) = Array.length a - 1
 
+let set_elt (a:'a t) (n:int) (v:elt) =
+  (* If the analysis finds out that v is a floating point value, this
+     prevents the conversion of the set to a float array set *)
+  Array.set a n (Sys.opaque_identity v)
+
+let unsafe_set_elt (a:'a t) (n:int) (v:elt) =
+  Array.unsafe_set a n (Sys.opaque_identity v)
+
 let set_some (a:'a t) (n:int) (v:'a) : unit =
   if n < 0 then invalid_arg "Nullable_array.set_some";
-  Array.set (a:'a t) (n+1) (Obj.magic v : elt)
+  set_elt (a:'a t) (n+1) (Obj.magic v : elt)
 
 let clear (a:'a t) (n:int) : unit =
   if n < 0 then invalid_arg "Nullable_array.clear";
   let null = get_null a in
-  Array.set (a:'a t) (n+1) null
+  set_elt (a:'a t) (n+1) null
 
 let set (a:'a t) (n:int) (v:'a option) : unit =
   if n < 0 then invalid_arg "Nullable_array.set_some";
   match v with
   | None ->
     let null = get_null a in
-    Array.set (a:'a t) (n+1) null
+    set_elt (a:'a t) (n+1) null
   | Some v ->
-    Array.set (a:'a t) (n+1) (Obj.magic v : elt)
+    set_elt (a:'a t) (n+1) (Obj.magic v : elt)
 
 let iteri ~(some:int -> 'a -> unit) ~(none:int -> unit) (a:'a t) : unit =
   let null = get_null a in
@@ -245,8 +253,8 @@ let unsafe_get_some (a:'a t) (n:int) : 'a =
   (Obj.magic elt:'a)
 
 let unsafe_set_some (a:'a t) (n:int) (v:'a) : unit =
-  Array.unsafe_set (a:'a t) (n+1) (Obj.magic v : elt)
+  unsafe_set_elt (a:'a t) (n+1) (Obj.magic v : elt)
 
 let unsafe_clear (a:'a t) (n:int) : unit =
   let null = get_null a in
-  Array.unsafe_set (a:'a t) (n+1) null
+  unsafe_set_elt (a:'a t) (n+1) null
