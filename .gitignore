@@ -8,3 +8,4 @@ asm
 */*.o
 */*.byte
 */*.opt
+_build

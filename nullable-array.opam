@@ -9,25 +9,20 @@ license: "MIT"
 dev-repo: "https://github.com/OCamlPro/ocplib-nullable-array.git"
 
 build: [
-  [make "byte"]
-  [make "native"] { ocaml-native }
-  [make "natdynlink"] { ocaml-native-dynlink }
+  ["jbuilder" "build" "--only-packages" "nullable-array" "--root" "." "-j" jobs "@install"]
 ]
 
 build-test: [
-  [make "test_byte"]
-  [make "test_native"] { ocaml-native }
-]
-
-build-doc: [
-  [make "doc"]
+  ["jbuilder" "runtest"]
 ]
 
 install: [] (* no install rules: done through a .install file *)
 
 available: [
   ocaml-version >= "4.02"   (* use -keep-locs and attributes *)
-  & ocaml-version <= "4.04" (* need to be tested before announcing that a version is correct *)
+  & ocaml-version <= "4.05" (* need to be tested before announcing that a version is correct *)
 ]
 
-depends: []
+depends: [
+  "jbuilder" {build & >= "1.0+beta8"}
+]

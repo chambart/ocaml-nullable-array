@@ -77,6 +77,7 @@
 
 *)
 
+[@@@ocaml.warning "-37"] (* The type elt is never built *)
 
 type elt =
   | Constant

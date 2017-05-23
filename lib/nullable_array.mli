@@ -1,7 +1,7 @@
 (************************************************************************)
 (*  nullable-array                                                      *)
 (*                                                                      *)
-(*    Copyright 2016 OCamlPro                                           *)
+(*    Copyright 2016-2017 OCamlPro                                      *)
 (*                                                                      *)
 (*  This file is distributed under the terms of the MIT License         *)
 (*                                                                      *)
