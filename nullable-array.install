@@ -1,0 +1,18 @@
+lib: [
+  "_build/install/default/lib/nullable-array/META" {"META"}
+  "_build/install/default/lib/nullable-array/opam" {"opam"}
+  "_build/install/default/lib/nullable-array/nullable_array.cmi"
+  "_build/install/default/lib/nullable-array/nullable_array.cmx"
+  "_build/install/default/lib/nullable-array/nullable_array.cmt"
+  "_build/install/default/lib/nullable-array/nullable_array.cmti"
+  "_build/install/default/lib/nullable-array/nullable_array.mli"
+  "_build/install/default/lib/nullable-array/nullable_array.cma"
+  "_build/install/default/lib/nullable-array/nullable_array.cmxa"
+  "_build/install/default/lib/nullable-array/nullable_array.a"
+  "_build/install/default/lib/nullable-array/nullable_array.cmxs"
+]
+doc: [
+  "_build/install/default/doc/nullable-array/README.md"
+  "_build/install/default/doc/nullable-array/LICENSE.txt"
+  "_build/install/default/doc/nullable-array/CHANGES.md"
+]

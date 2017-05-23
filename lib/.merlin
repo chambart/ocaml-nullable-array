@@ -1,0 +1,3 @@
+B ../_build/default/lib
+FLG -w -40 -keep-docs -keep-locs
+S .

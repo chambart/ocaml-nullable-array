@@ -1,0 +1,4 @@
+B ../_build/default/lib
+B ../_build/default/test
+FLG -w -40 -w -40
+S .
