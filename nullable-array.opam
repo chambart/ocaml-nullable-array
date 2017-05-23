@@ -16,8 +16,6 @@ build-test: [
   ["jbuilder" "runtest"]
 ]
 
-install: [] (* no install rules: done through a .install file *)
-
 available: [
   ocaml-version >= "4.03"   (* use Sys.opaque_identity *)
   & ocaml-version <= "4.06" (* need to be tested before announcing that a version is correct *)
