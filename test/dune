@@ -1,0 +1,27 @@
+(executables
+  (names basic)
+  (modules basic)
+  (modes byte exe)
+  (libraries nullable_array))
+
+(rule
+  (alias    runtest)
+  (action   (run ./basic.exe)))
+
+(rule
+  (alias    runtest)
+  (action   (run ./basic.bc)))
+
+(executables
+  (names basic_float)
+  (modules basic_float)
+  (modes byte exe)
+  (libraries nullable_array))
+
+(rule
+  (alias    runtest)
+  (action   (run ./basic_float.exe)))
+
+(rule
+  (alias    runtest)
+  (action   (run ./basic_float.bc)))

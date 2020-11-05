@@ -206,7 +206,6 @@ let t8 () =
     if eq then incr equal;
   done;
   assert(!equal > 0); (* Verify that we tested the equal case at least once *)
-  Printf.printf "eq: %i\n%!" !equal;
   ()
 
 let () =

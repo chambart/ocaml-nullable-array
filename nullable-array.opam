@@ -1,26 +1,28 @@
-opam-version: "1.2"
+opam-version: "2.0"
 name: "ocplib-nullable-array"
-version: "0.1"
+version: "1.0.0"
 maintainer: "Pierre Chambart <pierre.chambart@ocamlpro.com>"
-authors: "Pierre Chambart <pierre.chambart@ocamlpro.com>"
-homepage: "https://github.com/chambart/ocplib-nullable-array"
-bug-reports: "https://github.com/chambart/ocplib-nullable-array/issues"
+authors: "Pierre Chambart"
+homepage: "https://github.com/chambart/ocaml-nullable-array"
+bug-reports: "https://github.com/chambart/ocaml-nullable-array/issues"
 license: "MIT"
-dev-repo: "https://github.com/chambart/ocplib-nullable-array.git"
+dev-repo: "git+https://github.com/chambart/ocaml-nullable-array.git"
+synopsis:
+  "More efficient `'a option array`"
+description: """
+
+Small self-contained library providing an efficient implementation for a type equivalent to `'a option array`
+"""
 
 build: [
-  ["jbuilder" "build" "--only-packages" "nullable-array" "--root" "." "-j" jobs "@install"]
-]
-
-build-test: [
-  ["jbuilder" "runtest"]
-]
-
-available: [
-  ocaml-version >= "4.03"   (* use Sys.opaque_identity *)
-  & ocaml-version <= "4.06" (* need to be tested before announcing that a version is correct *)
+  ["dune" "subst"] {pinned}
+  ["dune" "build" "-p" name "-j" jobs]
+  ["dune" "runtest" "-p" name "-j" jobs] {with-test}
+  ["dune" "build" "-p" name "@doc"] {with-doc}
 ]
 
 depends: [
-  "jbuilder" {build & >= "1.0+beta8"}
+  "dune" {>= "1.10"}
+  "ocaml" {>= "4.03"   (* use Sys.opaque_identity *)
+           & < "4.13~"} (* need to be tested before announcing that a version is correct *)
 ]
