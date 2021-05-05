@@ -139,6 +139,18 @@ let make (n:int) : 'a t =
      already does it *)
   Array.make (n+1) (null:elt)
 
+let make_some (n:int) (v:'a) : 'a t =
+  if n < 0 then invalid_arg "Nullable_array.make_some";
+  let a = Array.make (n+1) (Obj.magic (Sys.opaque_identity v) : elt) in
+  Array.unsafe_set a 0 null;
+  a
+
+let init_some (n:int) (f:int -> 'a) : 'a t =
+  if n < 0 then invalid_arg "Nullable_array.init_some";
+  Array.init (n+1) (function
+      | 0 -> (null:elt)
+      | i -> (Obj.magic (f (i-1)) : elt))
+
 let empty_array : 'a t = [| null |]
 
 let get_null (a:'a t) : elt =
@@ -171,6 +183,10 @@ let set_some (a:'a t) (n:int) (v:'a) : unit =
   if n < 0 then invalid_arg "Nullable_array.set_some";
   set_elt (a:'a t) (n+1) (Obj.magic v : elt)
 
+let fill_some (a:'a t) (pos:int) (len:int) (v:'a) : unit =
+  let v = (Sys.opaque_identity (Obj.magic v : elt)) in
+  Array.fill a (pos+1) len v
+
 let clear (a:'a t) (n:int) : unit =
   if n < 0 then invalid_arg "Nullable_array.clear";
   let null = get_null a in
@@ -195,6 +211,49 @@ let iteri ~(some:int -> 'a -> unit) ~(none:int -> unit) (a:'a t) : unit =
       none (i-1)
   done
 [@@ocaml.inline]
+
+let map_some (f:'a -> 'b) (from:'a t) : 'b t =
+  let null = get_null from in
+  let len = Array.length from in
+  let to_ = Array.make len null in
+  for i = 1 to len - 1 do
+    let elt = Array.unsafe_get from i in
+    if elt != null then
+      let elt' : elt = Obj.magic (f (Obj.magic elt:'a)) in
+      unsafe_set_elt to_ i elt'
+  done;
+  to_
+
+let mapi_some (f:int -> 'a -> 'b) (from:'a t) : 'b t =
+  let null = get_null from in
+  let len = Array.length from in
+  let to_ = Array.make len null in
+  for i = 1 to len - 1 do
+    let elt = Array.unsafe_get from i in
+    if elt != null then
+      let elt' : elt = Obj.magic (f (i-1) (Obj.magic elt:'a)) in
+      unsafe_set_elt to_ i elt'
+  done;
+  to_
+
+let unsafe_sub (a:'a t) (pos:int) (len:int) : 'a t =
+  if pos = 0 then
+    (* Let the runtime copy the null element *)
+    Array.sub a pos (len+1)
+  else
+    (* Include an extra element at the start of the new array,
+       then set it to [null]. *)
+    let res = Array.sub a (pos-1) (len+1) in
+    unsafe_set_elt res 0 (get_null a);
+    res
+
+let sub (a:'a t) (pos:int) (len:int) : 'a t =
+  if pos < 0 || len < 0 || pos > length a - len
+  then invalid_arg "Nullable_array.sub"
+  else unsafe_sub a pos len
+
+let copy (a:'a t) : 'a t =
+  unsafe_sub a 0 (length a)
 
 let unsafe_manual_blit (from:'a t) (from_start:int) (to_:'a t) (to_start:int) (len:int) =
   let null_from = get_null from in
@@ -224,6 +283,17 @@ let blit (from:'a t) (from_start:int) (to_:'a t) (to_start:int) (len:int) =
       (unsafe_manual_blit [@inlined never]) from from_start to_ to_start len
   end
 
+let of_array (a:'a array) : 'a t =
+  init_some (Array.length a) (fun i -> Array.unsafe_get a i)
+
+let of_list (l:'a list) : 'a t =
+  let a = make (List.length l) in
+  let rec fill i = function
+    | [] -> a
+    | x :: xs -> unsafe_set_elt a i (Obj.magic x : elt); fill (i+1) xs
+  in
+  fill 1 l
+
 let equal (a1:'a t) (a2:'a t) ~(equal:'a -> 'a -> bool) =
   length a1 = length a2 &&
   let null1 = get_null a1 in
@@ -246,6 +316,8 @@ let equal (a1:'a t) (a2:'a t) ~(equal:'a -> 'a -> bool) =
         false
   in
   loop (length a1)
+
+let max_length = Sys.max_array_length - 1
 
 (* Unsafe functions *)
 

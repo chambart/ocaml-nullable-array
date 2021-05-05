@@ -44,6 +44,26 @@ val make : int -> 'a t
 
     Raise [Invalid_argument] if [n < 0] or [n > Sys.max_array_length - 1]. *)
 
+val make_some : int -> 'a -> 'a t
+(** [make_some n x] Create an array of size [n] in which each element is
+    initially set to [Some x].
+
+    Raise [Invalid_argument] if [n < 0] or [n > Sys.max_array_length - 1]. *)
+
+val init_some : int -> (int -> 'a) -> 'a t
+(** [init_some n f] Returns a fresh array of length [n], with the element at
+    index [i] given by [Some (f i)].
+
+    Raise [Invalid_argument] if [n < 0] or [n > Sys.max_array_length - 1]. *)
+
+val sub : 'a t -> int -> int -> 'a t
+(** [sub a pos len] returns a fresh array of length [len], containing the
+    elements number [pos] to [pos + len - 1] of array [a].
+
+    Raise [Invalid_argument] if [pos] and [len] do not designate a valid
+    subarray of a; that is, if [pos < 0], or [len < 0], or [pos + len > length
+    a]. *)
+
 val empty_array : 'a t
 (** A preallocated empty array *)
 
@@ -81,6 +101,13 @@ val set_some : 'a t -> int -> 'a -> unit
     {[set_some a n v; assert( get a n = Some v )]}
 *)
 
+val fill_some : 'a t -> int -> int -> 'a -> unit
+(** [fill_some a pos len x] Modifies array [a] in place, replacing
+    each element from [pos] to [pos + len - 1] with [Some x].
+
+    Raise [Invalid_argument "index out of bounds"] if [pos]
+    and [len] do not designate a valid subarray of [a]. *)
+
 val clear : 'a t -> int -> unit
 (** [clear a n] Modifies array [a] in place, replacing
     element number [n] with [None].
@@ -100,6 +127,34 @@ val iteri : some:(int -> 'a -> unit) -> none:(int -> unit) -> 'a t -> unit
     [some 0 v0; none 1; some 2 v2].
  *)
 
+val map_some : ('a -> 'b) -> 'a t -> 'b t
+(** [map_some f a] builds an array [a'] of size equal to [a] in which each
+    non-null element is given by applying [f] to the corresponding element
+    in [a].
+
+    For example:
+
+    {[
+        map_some f [| Some v0; None; Some v2; None |]
+      = [| Some (f v0); None; Some (f v2); None |]
+    ]}
+ *)
+
+val mapi_some : (int -> 'a -> 'b) -> 'a t -> 'b t
+(** [mapi_some] is like {!map_some}, but also supplies the index of non-null
+    elements to the mapping function.
+
+    For example:
+
+    {[
+        mapi_some f [| Some v0; None; Some v2; None |]
+      = [| Some (f 0 v0); None; Some (f 2 v2); None |]
+    ]}
+ *)
+
+val copy : 'a t -> 'a t
+(** [copy a] results a fresh array containing the same elements as [a]. *)
+
 val blit : 'a t -> int -> 'a t -> int -> int -> unit
 (** [blit from from_start to to_start len] copies [len] elements
     from array [from], starting at element number [from_start],
@@ -112,6 +167,18 @@ val blit : 'a t -> int -> 'a t -> int -> int -> unit
     [to_start] and [len] do not designate a valid subarray of [to].
  *)
 
+val of_array : 'a array -> 'a t
+(** [of_array a] returns a fresh array containing the elements of [a].
+
+    Raise [Invalid_argument] if the length of [a] is greater than
+    {!max_length}. *)
+
+val of_list : 'a list -> 'a t
+(** [of_list l] returns a fresh array containing the elements of [l].
+
+    Raise [Invalid_argument] if the length of [l] is greater than
+    {!max_length}. *)
+
 val equal : 'a t -> 'a t -> equal:('a -> 'a -> bool) -> bool
 (** [equal a1 a2 ~equal] is true if [a1] and [a2] have the same length
     and for all elements of [a1] and [a2]
@@ -123,6 +190,9 @@ val equal : 'a t -> 'a t -> equal:('a -> 'a -> bool) -> bool
 
     [equal empty_array empty_array ~equal] is [true]
  *)
+
+val max_length : int
+(** [max_length] is [Sys.max_array_length - 1]. *)
 
 (**/**)
 (** {6 Undocumented functions} *)
