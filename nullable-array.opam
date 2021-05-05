@@ -22,7 +22,7 @@ build: [
 ]
 
 depends: [
-  "dune" {>= "1.10"}
+  "dune" {>= "2.0"}
   "ocaml" {>= "4.03"   (* use Sys.opaque_identity *)
            & < "4.13~"} (* need to be tested before announcing that a version is correct *)
 ]
